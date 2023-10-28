@@ -4,29 +4,31 @@ import { GoSmiley } from "react-icons/go";
 import { useState } from "react";
 import EmojiPicker from "emoji-picker-react";
 import { db } from "../config/firebase";
-import { doc, setDoc, Timestamp, FieldValue } from "firebase/firestore";
+import { Timestamp, collection, addDoc } from "firebase/firestore";
 
 const PostOverlay = ({ post, onClose }) => {
   if (!post) return;
 
   const [input, setInput] = useState("");
   const [showPicker, setShowPicker] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const onEmojiClick = (eventObj) => {
     setInput((prevInput) => prevInput + eventObj.emoji);
     setShowPicker(false);
   };
 
-  const sendPost = (e) => {
+  const sendPost = async (e) => {
     e.preventDefault();
-    setDoc(doc(db, "posts", "post"), {
+    setLoading(!loading);
+    const docRef = await addDoc(collection(db, "posts"), {
       name: "Dan Emaas",
       description: "this is a test",
       message: input,
       photoUrl: "",
       timeStamp: Timestamp.fromDate(new Date()),
     });
-
+    setLoading(!loading);
     onClose();
   };
 
@@ -84,7 +86,7 @@ const PostOverlay = ({ post, onClose }) => {
             }`}
             disabled={input === ""}
           >
-            post
+            {!loading ? "post" : "sending"}
           </button>
         </div>
       </section>
