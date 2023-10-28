@@ -1,3 +1,6 @@
 # LinkedIn Clone - REACT JS
 
-TEACH Stack will be provided once the project is done!!
+As of now the Tech Stack used for this project are:
+--React JS
+--Firebase Auth
+--Firebase Firestore
