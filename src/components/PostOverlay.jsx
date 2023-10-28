@@ -3,6 +3,8 @@ import { AiFillCaretDown, AiOutlineClose } from "react-icons/ai";
 import { GoSmiley } from "react-icons/go";
 import { useState } from "react";
 import EmojiPicker from "emoji-picker-react";
+import { db } from "../config/firebase";
+import { doc, setDoc, Timestamp, FieldValue } from "firebase/firestore";
 
 const PostOverlay = ({ post, onClose }) => {
   if (!post) return;
@@ -13,6 +15,19 @@ const PostOverlay = ({ post, onClose }) => {
   const onEmojiClick = (eventObj) => {
     setInput((prevInput) => prevInput + eventObj.emoji);
     setShowPicker(false);
+  };
+
+  const sendPost = (e) => {
+    e.preventDefault();
+    setDoc(doc(db, "posts", "post"), {
+      name: "Dan Emaas",
+      description: "this is a test",
+      message: input,
+      photoUrl: "",
+      timeStamp: Timestamp.fromDate(new Date()),
+    });
+
+    onClose();
   };
 
   return (
@@ -63,6 +78,7 @@ const PostOverlay = ({ post, onClose }) => {
         )}
         <div className="flex justify-end items-center p-5">
           <button
+            onClick={sendPost}
             className={`capitalize font-medium py-1 px-3 rounded-md ${
               input === "" ? "bg-gray-400/20" : "bg-[#389FDD]"
             }`}

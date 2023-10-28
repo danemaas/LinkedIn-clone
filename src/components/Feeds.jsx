@@ -4,10 +4,23 @@ import { AiTwotoneCalendar } from "react-icons/ai";
 import Post from "./Post";
 import PostOverlay from "./PostOverlay";
 import ClickableIcons from "./ClickableIcons";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { db } from "../config/firebase";
 
 const Feeds = () => {
   const [post, setPost] = useState(false);
+  const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    // db.collection("posts").onSnapshot((snapshot) =>
+    //   setPosts(
+    //     snapshot.docs.map((doc) => ({
+    //       id: doc.id,
+    //       data: doc.data(),
+    //     }))
+    //   )
+    // );
+  }, []);
 
   const onClose = () => {
     setPost(!post);
@@ -68,6 +81,9 @@ const Feeds = () => {
       >
         <Post />
       </div>
+      {posts.map((item, index) => (
+        <div key={index}></div>
+      ))}
     </section>
   );
 };
