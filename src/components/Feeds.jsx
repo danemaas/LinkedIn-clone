@@ -6,17 +6,22 @@ import PostOverlay from "./PostOverlay";
 import ClickableIcons from "./ClickableIcons";
 import { useState, useEffect } from "react";
 import { db } from "../config/firebase";
-import { collection, onSnapshot } from "firebase/firestore";
+import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import { useAuthContext } from "../context/AuthContext";
 
 const Feeds = () => {
   const [post, setPost] = useState(false);
   const [posts, setPosts] = useState([]);
+  const { user } = useAuthContext();
 
-  const dbRef = collection(db, "posts");
+  const postsbyTimeStamp = query(
+    collection(db, "posts"),
+    orderBy("timeStamp", "desc")
+  );
 
   useEffect(() => {
     const getPosts = () => {
-      onSnapshot(dbRef, (response) => {
+      onSnapshot(postsbyTimeStamp, (response) => {
         setPosts(
           response.docs.map((item) => {
             return { ...item.data(), id: item.id };
@@ -33,16 +38,25 @@ const Feeds = () => {
   };
 
   return (
-    <section className="flex-[.5] mx-[1.5rem] w-full h-full">
+    <section className="flex-[.3] lg:flex-[.4] xl:flex-[.5] mx-0 md:mx-[1.5rem] w-full h-full">
       <PostOverlay post={post} onClose={onClose} />
       <div
         className="translate-y-[5rem] w-full flex flex-col border-[1px] border-stone-400/20
         rounded-[10px] bg-white mb-[1rem] p-[1rem] gap-[1rem]"
       >
         <div className="flex-[.5] flex items-center gap-3">
-          <div>
-            <MdAccountCircle size={50} />
-          </div>
+          {user ? (
+            <img
+              src={user?.photoURL}
+              alt=""
+              className="w-[50px] h-[50px] rounded-full"
+            />
+          ) : (
+            <div>
+              <MdAccountCircle size={50} />
+            </div>
+          )}
+
           <input
             onClick={() => setPost(!post)}
             type="text"
@@ -82,10 +96,12 @@ const Feeds = () => {
         rounded-[10px] bg-white mb-[1rem] p-[1rem] gap-[1rem]"
         >
           <Post
-            name={item.name}
-            description={item.description}
-            message={item.message}
-            timeStamp={item.timeStamp.seconds}
+            key={index}
+            name={item?.name}
+            description={item?.description}
+            message={item?.message}
+            timeStamp={item?.timeStamp?.seconds}
+            photoUrl={item?.photoUrl}
           />
         </div>
       ))}

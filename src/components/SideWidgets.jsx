@@ -25,7 +25,7 @@ function SideWidgets() {
   );
 
   return (
-    <aside className="flex-[.3] translate-y-[5rem] w-full">
+    <aside className="flex-[.3] translate-y-[5rem] w-full hidden lg:block">
       <div
         className="flex flex-col border-[1px] border-stone-400/20 rounded-[10px]
         bg-white mb-[1rem] p-[1rem]"

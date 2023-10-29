@@ -1,6 +1,6 @@
 import { AiFillHome, AiOutlineMessage } from "react-icons/ai";
 import { FaUserGroup } from "react-icons/fa6";
-import { MdWork, MdNotifications, MdAccountCircle } from "react-icons/md";
+import { MdWork, MdNotifications } from "react-icons/md";
 
 export const navMenus = [
   {
@@ -22,9 +22,5 @@ export const navMenus = [
   {
     icon: <MdNotifications />,
     item: "notifications",
-  },
-  {
-    icon: <MdAccountCircle />,
-    item: "me",
   },
 ];

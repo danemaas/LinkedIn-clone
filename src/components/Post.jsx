@@ -4,13 +4,24 @@ import { BiRepost } from "react-icons/bi";
 import ClickableIcons from "./ClickableIcons";
 import { timeFormat } from "../utils/timeFormat";
 
-const Post = ({ name, description, message, timeStamp }) => {
+const Post = ({ name, description, message, timeStamp, photoUrl }) => {
+  if (!timeStamp) return;
+
   const convertTimeStamp = new Date(timeStamp * 1000);
-  console.log(timeFormat(convertTimeStamp.toISOString()));
+
   return (
     <section className="w-full flex flex-col gap-5">
       <div className="w-full flex gap-2">
-        <MdAccountCircle className="text-[3.5rem]" />
+        {photoUrl ? (
+          <img
+            src={photoUrl}
+            alt=""
+            className="w-[50px] h-[50px] rounded-full"
+          />
+        ) : (
+          <MdAccountCircle className="text-[3.5rem]" />
+        )}
+
         <div className="w-full">
           <div className="flex flex-col leading-5">
             <h2 className="font-medium">{name}</h2>

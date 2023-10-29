@@ -4,7 +4,8 @@ import { GoSmiley } from "react-icons/go";
 import { useState } from "react";
 import EmojiPicker from "emoji-picker-react";
 import { db } from "../config/firebase";
-import { Timestamp, collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { useAuthContext } from "../context/AuthContext";
 
 const PostOverlay = ({ post, onClose }) => {
   if (!post) return;
@@ -12,6 +13,7 @@ const PostOverlay = ({ post, onClose }) => {
   const [input, setInput] = useState("");
   const [showPicker, setShowPicker] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { user } = useAuthContext();
 
   const onEmojiClick = (eventObj) => {
     setInput((prevInput) => prevInput + eventObj.emoji);
@@ -22,13 +24,14 @@ const PostOverlay = ({ post, onClose }) => {
     e.preventDefault();
     setLoading(!loading);
     const docRef = await addDoc(collection(db, "posts"), {
-      name: "Dan Emaas",
-      description: "this is a test",
+      name: `${user?.displayName}`,
+      description: "some user",
       message: input,
-      photoUrl: "",
-      timeStamp: Timestamp.fromDate(new Date()),
+      photoUrl: `${user?.photoURL}`,
+      timeStamp: serverTimestamp(),
     });
     setLoading(!loading);
+    setInput("");
     onClose();
   };
 
@@ -37,13 +40,22 @@ const PostOverlay = ({ post, onClose }) => {
       <div className="w-full min-h-[100vh] bg-black/70 fixed top-0 left-0 z-10 overflow-hidden" />
       <section
         className={`bg-white max-w-max h-max text-black
-        fixed z-[100] rounded-md shadow-md shadow-slate-600 translate-y-[7rem]`}
+        fixed z-[100] rounded-md shadow-md shadow-slate-60 translate-y-[7rem] -translate-x-2`}
       >
         <div className="w-full flex justify-between p-3">
           <div className="flex gap-2 hover:bg-gray-400/20 p-1 rounded-md cursor-pointer">
-            <MdAccountCircle className="text-[2.5rem]" />
+            {user ? (
+              <img
+                src={user?.photoURL}
+                alt=""
+                className="w-[40px] h-[40px] rounded-full"
+              />
+            ) : (
+              <MdAccountCircle className="text-[2.5rem]" />
+            )}
+
             <div className="leading-5">
-              <h2 className="font-medium">Dan Emaas</h2>
+              <h2 className="font-medium">{user?.displayName}</h2>
               <p className="text-[13px] text-gray-400">post to anyone</p>
             </div>
             <AiFillCaretDown />
@@ -78,13 +90,14 @@ const PostOverlay = ({ post, onClose }) => {
             <EmojiPicker onEmojiClick={onEmojiClick} />
           </div>
         )}
-        <div className="flex justify-end items-center p-5">
+        <div></div>
+        <div className="flex justify-end items-center p-5 border-t-[1px]">
           <button
             onClick={sendPost}
             className={`capitalize font-medium py-1 px-3 rounded-md ${
               input === "" ? "bg-gray-400/20" : "bg-[#389FDD]"
             }`}
-            disabled={input === ""}
+            disabled={input === "" || loading}
           >
             {!loading ? "post" : "sending"}
           </button>
